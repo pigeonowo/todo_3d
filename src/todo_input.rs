@@ -24,9 +24,9 @@ impl Plugin for TodoInputPlugin {
 pub struct SelectedTodo(pub Option<usize>);
 
 #[derive(Resource)]
-struct TodoInputState {
-    typing: bool,
-    text: String,
+pub struct TodoInputState {
+    pub typing: bool,
+    pub text: String,
 }
 
 fn handle_input(

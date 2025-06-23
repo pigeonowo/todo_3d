@@ -7,7 +7,7 @@ impl Plugin for TodoDisplayPlugin {
         app.add_systems(Startup, setup);
         app.add_systems(Update, display_selected);
         app.add_systems(Update, display_todos);
-        // text input
+        app.add_systems(Update, display_todo_input);
     }
 }
 
@@ -17,6 +17,8 @@ struct ControlText;
 struct SelectedText;
 #[derive(Component)]
 struct TodoText;
+#[derive(Component)]
+struct TodoInputText;
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
@@ -51,6 +53,21 @@ fn setup(mut commands: Commands) {
         },
         SelectedText,
     ));
+    let todo_input_text_font = TextFont {
+        font_size: 12.0,
+        ..default()
+    };
+    commands.spawn((
+        Text::default(),
+        todo_input_text_font,
+        Node {
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(12.0),
+            left: Val::Px(200.0),
+            ..default()
+        },
+        TodoInputText,
+    ));
 }
 
 fn display_selected(
@@ -64,6 +81,19 @@ fn display_selected(
         txt.push_str("None");
     }
     selected_text.0 = txt;
+}
+
+fn display_todo_input(
+    mut input_text: Single<&mut Text, With<TodoInputText>>,
+    text: Res<TodoInputState>,
+) {
+    if text.typing {
+        let mut txt = String::from("Adding: ");
+        txt.push_str(&text.text);
+        input_text.0 = txt;
+    } else {
+        input_text.0 = String::from("");
+    }
 }
 
 fn display_todos(
